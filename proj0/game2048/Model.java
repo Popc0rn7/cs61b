@@ -5,7 +5,7 @@ import java.util.Observable;
 
 
 /** The state of a game of 2048.
- *  @author TODO: YOUR NAME HERE
+ *  @author Marcus Wong
  */
 public class Model extends Observable {
     /** Current contents of the board. */
@@ -113,6 +113,13 @@ public class Model extends Observable {
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
+        if (side == Side.NORTH || side == Side.SOUTH) {
+            for (int col = 0; col < size(); col++) {
+                for (int row = 0; row < size(); row++) {
+                    if (tile(col, row) == null) return true;
+                }
+            }
+        }
 
         checkGameOver();
         if (changed) {
@@ -138,6 +145,11 @@ public class Model extends Observable {
      * */
     public static boolean emptySpaceExists(Board b) {
         // TODO: Fill in this function.
+        for (int col = 0; col < b.size(); col++) {
+            for (int row = 0; row < b.size(); row++) {
+                if (b.tile(col, row) == null) return true;
+            }
+        }
         return false;
     }
 
@@ -148,6 +160,11 @@ public class Model extends Observable {
      */
     public static boolean maxTileExists(Board b) {
         // TODO: Fill in this function.
+        for (int col = 0; col < b.size(); col++) {
+            for (int row = 0; row < b.size(); row++) {
+                if (b.tile(col, row) != null && b.tile(col, row).value() >= MAX_PIECE) return true;
+            }
+        }
         return false;
     }
 
@@ -159,6 +176,13 @@ public class Model extends Observable {
      */
     public static boolean atLeastOneMoveExists(Board b) {
         // TODO: Fill in this function.
+        if (emptySpaceExists(b)) return true;
+        for (int col = 0; col < b.size(); col++) {
+            for (int row = 0; row < b.size(); row++) {
+                if (row < b.size() - 1 && b.tile(col, row).value() == b.tile(col, row+1).value()) return true;
+                if (col < b.size() - 1 && b.tile(col, row).value() == b.tile(col+1, row).value()) return true;
+                         }
+        }
         return false;
     }
 
