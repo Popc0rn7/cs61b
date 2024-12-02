@@ -113,13 +113,16 @@ public class Model extends Observable {
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
-        if (side == Side.NORTH || side == Side.SOUTH) {
-            for (int col = 0; col < size(); col++) {
-                for (int row = 0; row < size(); row++) {
-                    if (tile(col, row) == null) return true;
-                }
-            }
+
+        // change viewpoint, so treat all as up
+        board.startViewingFrom(Side.opposite(side));
+
+        for (int col = 0; col < board.size(); col++) {
+            if(tiltCol(col)) changed = true;
         }
+
+        // back to normal viewpoint
+        board.startViewingFrom(Side.NORTH);
 
         checkGameOver();
         if (changed) {
@@ -128,6 +131,34 @@ public class Model extends Observable {
         return changed;
     }
 
+    public boolean tiltCol(int col) {
+        boolean changed;
+        changed = false;
+
+        int tailRow = 0;
+        for (int row = 1; row < board.size(); row++) {
+            Tile curTile = tile(col, row);
+            if (curTile == null) continue;
+            // former tile merged
+            if (tile(col, tailRow) == null) {
+                board.move(col, tailRow, curTile);
+                changed = true;
+            }
+            // former tile merges with cur
+            else if (tile(col, tailRow).value() == curTile.value()) {
+                score += 2 * curTile.value();
+                board.move(col, tailRow++, curTile);
+                changed = true;
+            }
+            // former tile not merged, but can not merge
+            else {
+                if (board.move(col, ++tailRow, curTile)) {
+                    changed = true;
+                }
+            }
+        }
+        return changed;
+    }
     /** Checks if the game is over and sets the gameOver variable
      *  appropriately.
      */
