@@ -152,7 +152,7 @@ public class Model extends Observable {
             }
             // former tile not merged, but can not merge
             else {
-                if (board.move(col, ++tailRow, curTile)) {
+                if (board.move(col, ++tailRow, curTile) || tailRow != row) {
                     changed = true;
                 }
             }
